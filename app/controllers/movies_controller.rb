@@ -1,5 +1,7 @@
 class MoviesController < ApplicationController
   
+  @title = false
+  @date = false
   
   def show
     id = params[:id] # retrieve movie ID from URI route
@@ -9,6 +11,7 @@ class MoviesController < ApplicationController
   end
 
   def index
+   
     @movies = Movie.with_ratings(params[:ratings])
     @all_ratings = Movie.all_ratings
     
@@ -17,8 +20,17 @@ class MoviesController < ApplicationController
     else
       @ratings_to_show = params[:ratings].keys
     end
-
+    
+    if params[:order] == 'title'
+      @movies = @movies.order('title')
+      @title = !(@title)
+    elsif params[:order] == 'release_date'
+      @movies = @movies.order('release_date')
+      @date = !(@date)
+    end
+ 
   end
+  
 
   def new
     # default: render 'new' template
@@ -53,8 +65,6 @@ class MoviesController < ApplicationController
   # This helps make clear which methods respond to requests, and which ones do not.
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
-  end
-  
-    
+  end  
   
 end
